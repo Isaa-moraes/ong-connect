@@ -134,6 +134,6 @@ const styles = StyleSheet.create({
   btnTexto: { 
     color: '#ffffff', 
     fontSize: 16, 
-    fontWeight: 'bold' 
+    fontWeight: 'bold'  
   }
 });
