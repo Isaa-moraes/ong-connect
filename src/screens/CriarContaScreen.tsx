@@ -13,11 +13,31 @@ export default function CriarContaScreen() {
   const navigation = useNavigation<CriarContaNavProp>();
 
   const avançarInteresses = () => {
+    // 1. Validação de campos vazios
     if (!nome.trim() || !email.trim() || !senha.trim()) {
       Alert.alert('⚠️ Campos vazios', 'Preencha todos os campos para se cadastrar.');
       return;
     }
-    navigation.navigate('Interesses', { userName: nome.trim(), email: email.trim() });
+
+    // 2. Nova Validação: Formato de e-mail
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email.trim())) {
+      Alert.alert('⚠️ E-mail inválido', 'Por favor, insira um endereço de e-mail válido.');
+      return;
+    }
+
+    // 3. Nova Validação: Tamanho da senha
+    if (senha.length < 6) {
+      Alert.alert('⚠️ Senha curta', 'A sua senha deve conter pelo menos 6 caracteres.');
+      return;
+    }
+
+    // Passa os parâmetros tipados incluindo a origem para a tela de causas saber de onde veio
+    navigation.navigate('Interesses', { 
+      userName: nome.trim(), 
+      email: email.trim(),
+      origem: 'cadastro'
+    });
   };
 
   return (
@@ -32,11 +52,34 @@ export default function CriarContaScreen() {
 
         <Text style={styles.subtitulo}>Junte-se à nossa rede de solidariedade</Text>
 
-        <TextInput style={styles.input} placeholder="Nome Completo" value={nome} onChangeText={setNome} />
-        <TextInput style={styles.input} placeholder="E-mail" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder="Senha de Acesso" value={senha} onChangeText={setSenha} secureTextEntry />
+        <TextInput 
+          style={styles.input} 
+          placeholder="Nome Completo" 
+          placeholderTextColor="#81c784"
+          value={nome} 
+          onChangeText={setNome} 
+        />
+        
+        <TextInput 
+          style={styles.input} 
+          placeholder="E-mail" 
+          placeholderTextColor="#81c784"
+          value={email} 
+          onChangeText={setEmail} 
+          keyboardType="email-address" 
+          autoCapitalize="none" 
+        />
+        
+        <TextInput 
+          style={styles.input} 
+          placeholder="Senha de Acesso" 
+          placeholderTextColor="#81c784"
+          value={senha} 
+          onChangeText={setSenha} 
+          secureTextEntry 
+        />
 
-        <TouchableOpacity style={styles.btnAvançar} onPress={avançarInteresses}>
+        <TouchableOpacity style={styles.btnAvançar} onPress={avançarInteresses} activeOpacity={0.8}>
           <Text style={styles.btnTexto}>Avançar</Text>
         </TouchableOpacity>
       </View>
@@ -64,16 +107,17 @@ const styles = StyleSheet.create({
     alignItems: 'center' 
   },
   logoApp: { 
-    width: 120, 
-    height: 120, 
+    width: 100, 
+    height: 100, 
     marginBottom: 5 
   },
   subtitulo: { 
-    fontSize: 13, 
-    color: '#666666', 
+    fontSize: 14, 
+    color: '#558b2f', // Alterado para um tom verde para combinar com o app
     textAlign: 'center', 
     marginTop: 5, 
-    marginBottom: 25 
+    marginBottom: 25,
+    fontWeight: '500'
   },
   input: { 
     width: '100%', 
@@ -83,7 +127,8 @@ const styles = StyleSheet.create({
     borderRadius: 10, 
     paddingHorizontal: 15, 
     fontSize: 16, 
-    marginBottom: 15 
+    marginBottom: 15,
+    color: '#1b5e20'
   },
   btnAvançar: { 
     backgroundColor: '#2e7d32', 

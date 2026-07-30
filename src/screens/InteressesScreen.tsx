@@ -12,7 +12,9 @@ const OPCOES_INTERESSES = ['Saúde', 'Educação', 'Meio Ambiente', 'Crianças',
 export default function InteressesScreen() {
   const route = useRoute<InteressesScreenRouteProp>();
   const navigation = useNavigation<InteressesScreenNavProp>();
-  const { userName, email } = route.params;
+
+  // Resgata os parâmetros tratando possíveis valores undefined de forma segura
+  const { userName, email, origem } = route.params || {};
 
   const [selecionados, setSelecionados] = useState<string[]>([]);
 
@@ -29,9 +31,25 @@ export default function InteressesScreen() {
       Alert.alert('💡 Dica', 'Selecione pelo menos uma área de interesse para podermos te guiar melhor.');
       return;
     }
-    // Entra no App enviando Nome, Email e o Array com todos os Interesses marcados
-    navigation.navigate('HomeTabs', { userName, email, interesses: selecionados });
+
+    if (origem === 'perfil') {
+      navigation.navigate('HomeTabs', {
+        userName: userName || 'Voluntário',
+        interesses: selecionados,
+      });
+    } else {
+      // MUDANÇA AQUI: Joga para o Login guardando os dados reais que ele acabou de preencher!
+      Alert.alert('Sucesso! 🎉', 'Conta criada com sucesso. Faça login para entrar.');
+      navigation.navigate('Login', {
+        dadosCadastrados: {
+          userName: userName || '',
+          email: email || '',
+          interesses: selecionados
+        }
+      });
+    }
   };
+
 
   return (
     <View style={styles.container}>
@@ -57,7 +75,10 @@ export default function InteressesScreen() {
         </View>
 
         <TouchableOpacity style={styles.btnConcluir} onPress={concluirCadastro}>
-          <Text style={styles.btnTexto}>Concluir e Entrar</Text>
+          {/* Altera dinamicamente o texto do botão baseado na origem para ficar mais amigável */}
+          <Text style={styles.btnTexto}>
+            {origem === 'perfil' ? 'Salvar Interesses' : 'Concluir e Entrar'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -65,75 +86,75 @@ export default function InteressesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#e8f5e9', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    padding: 20 
+  container: {
+    flex: 1,
+    backgroundColor: '#e8f5e9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
   },
-  card: { 
-    width: '100%', 
-    maxWidth: 380, 
-    backgroundColor: '#ffffff', 
-    padding: 25, 
-    borderRadius: 16, 
-    borderWidth: 1, 
-    borderColor: '#a5d6a7', 
-    elevation: 4 
+  card: {
+    width: '100%',
+    maxWidth: 380,
+    backgroundColor: '#ffffff',
+    padding: 25,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#a5d6a7',
+    elevation: 4
   },
-  titulo: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    color: '#1b5e20', 
-    textAlign: 'center' 
+  titulo: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#1b5e20',
+    textAlign: 'center'
   },
-  subtitulo: { 
-    fontSize: 14, 
-    color: '#555555', 
-    textAlign: 'center', 
-    marginTop: 8, 
-    marginBottom: 20, 
-    lineHeight: 20 
+  subtitulo: {
+    fontSize: 14,
+    color: '#555555',
+    textAlign: 'center',
+    marginTop: 8,
+    marginBottom: 20,
+    lineHeight: 20
   },
-  grid: { 
-    flexDirection: 'row', 
-    flexWrap: 'wrap', 
-    gap: 10, 
-    justifyContent: 'center', 
-    marginBottom: 25 
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+    justifyContent: 'center',
+    marginBottom: 25
   },
-  tag: { 
-    paddingVertical: 10, 
-    paddingHorizontal: 16, 
-    borderRadius: 20, 
-    borderWidth: 2, 
-    borderColor: '#4caf50', 
-    backgroundColor: '#ffffff' 
+  tag: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#4caf50',
+    backgroundColor: '#ffffff'
   },
-  tagSelecionada: { 
-    backgroundColor: '#2e7d32', 
-    borderColor: '#2e7d32' 
+  tagSelecionada: {
+    backgroundColor: '#2e7d32',
+    borderColor: '#2e7d32'
   },
-  tagTexto: { 
-    color: '#2e7d32', 
-    fontWeight: 'bold', 
-    fontSize: 14 
+  tagTexto: {
+    color: '#2e7d32',
+    fontWeight: 'bold',
+    fontSize: 14
   },
-  tagTextoSelecionado: { 
-    color: '#ffffff' 
+  tagTextoSelecionado: {
+    color: '#ffffff'
   },
-  btnConcluir: { 
-    backgroundColor: '#2e7d32', 
-    width: '100%', 
-    height: 50, 
-    borderRadius: 10, 
-    justifyContent: 'center', 
-    alignItems: 'center' 
+  btnConcluir: {
+    backgroundColor: '#2e7d32',
+    width: '100%',
+    height: 50,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  btnTexto: { 
-    color: '#ffffff', 
-    fontSize: 16, 
-    fontWeight: 'bold' 
+  btnTexto: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold'
   }
 });

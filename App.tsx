@@ -9,10 +9,10 @@ import InteressesScreen from './src/screens/InteressesScreen';
 import TabNavigator from './src/navigation/TabNavigator';
 
 export type RootStackParamList = {
-  Login: undefined;
+  Login: { dadosCadastrados?: { userName: string; email: string; interesses: string[] } } | undefined;
   CriarConta: undefined;
-  Interesses: { userName: string; email: string };
-  HomeTabs: { userName: string; email: string; interesses: string[] };
+  Interesses: { userName?: string; email?: string; origem?: 'cadastro' | 'perfil' };
+  HomeTabs: { userName: string; email?: string; interesses: string[] };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -24,7 +24,14 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="CriarConta" component={CriarContaScreen} />
-          <Stack.Screen name="Interesses" component={InteressesScreen} />
+          
+          {/* Adicionado a apresentação de modal para ficar visualmente incrível ao abrir do perfil */}
+          <Stack.Screen 
+            name="Interesses" 
+            component={InteressesScreen} 
+            options={{ presentation: 'modal' }} 
+          />
+          
           <Stack.Screen name="HomeTabs" component={TabNavigator} />
         </Stack.Navigator>
       </NavigationContainer>

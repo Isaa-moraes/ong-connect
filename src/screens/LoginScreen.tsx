@@ -1,23 +1,46 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../App';
 
 type LoginScreenNavProp = StackNavigationProp<RootStackParamList, 'Login'>;
+type LoginScreenRouteProp = RouteProp<RootStackParamList, 'Login'>;
 
 export default function LoginScreen() {
-  const [nome, setNome] = useState('');
+  const [emailDigitado, setEmailDigitado] = useState('');
   const [senha, setSenha] = useState('');
+  
   const navigation = useNavigation<LoginScreenNavProp>();
+  const route = useRoute<LoginScreenRouteProp>();
+
+  // Captura os dados vindos do cadastro real (se existirem)
+  const { dadosCadastrados } = route.params || {};
 
   const lidarComLogin = () => {
-    if (!nome.trim() || !senha.trim()) {
-      Alert.alert('⚠️ Erro', 'Preencha os campos de nome e senha.');
+    if (!emailDigitado.trim() || !senha.trim()) {
+      Alert.alert('⚠️ Erro', 'Preencha os campos de e-mail e senha.');
       return;
     }
-    // No login direto, passa o nome coletado e interesses genéricos padrão
-    navigation.navigate('HomeTabs', { userName: nome.trim(), email: '', interesses: ['Geral'] });
+
+    // Validação real: Verifica se existe um cadastro na memória dessa sessão
+    if (!dadosCadastrados) {
+      Alert.alert('⚠️ Erro', 'Nenhuma conta encontrada com este e-mail. Por favor, cadastre-se primeiro.');
+      return;
+    }
+
+    // Verifica se o e-mail digitado coincide exatamente com o e-mail do cadastro
+    if (emailDigitado.trim().toLowerCase() !== dadosCadastrados.email.toLowerCase()) {
+      Alert.alert('⚠️ Erro', 'E-mail ou senha incorretos.');
+      return;
+    }
+
+    // Se as credenciais baterem, entra no app levando o Nome e os Interesses REAIS do cadastro!
+    navigation.replace('HomeTabs', { 
+      userName: dadosCadastrados.userName, 
+      email: dadosCadastrados.email, 
+      interesses: dadosCadastrados.interesses 
+    });
   };
 
   return (
@@ -32,15 +55,33 @@ export default function LoginScreen() {
 
         <Text style={styles.subtitulo}>Faça login para continuar suas ações</Text>
 
-        <TextInput style={styles.input} placeholder="Seu Nome" value={nome} onChangeText={setNome} autoCapitalize="words" />
-        <TextInput style={styles.input} placeholder="Sua Senha" value={senha} onChangeText={setSenha} secureTextEntry />
+        <TextInput 
+          style={styles.input} 
+          placeholder="Seu E-mail" // Mudado para E-mail para simular um site real
+          placeholderTextColor="#81c784"
+          value={emailDigitado} 
+          onChangeText={setEmailDigitado} 
+          keyboardType="email-address"
+          autoCapitalize="none" 
+        />
+        
+        <TextInput 
+          style={styles.input} 
+          placeholder="Sua Senha" 
+          placeholderTextColor="#81c784"
+          value={senha} 
+          onChangeText={setSenha} 
+          secureTextEntry 
+        />
 
-        <TouchableOpacity style={styles.btnEntrar} onPress={lidarComLogin}>
+        <TouchableOpacity style={styles.btnEntrar} onPress={lidarComLogin} activeOpacity={0.8}>
           <Text style={styles.btnTexto}>Entrar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('CriarConta')} style={styles.linkContainer}>
-          <Text style={styles.linkTexto}>Primeira vez? <Text style={styles.linkDestaque}>Criar uma conta</Text></Text>
+        <TouchableOpacity onPress={() => navigation.navigate('CriarConta')} style={styles.linkContainer} activeOpacity={0.6}>
+          <Text style={styles.linkTexto}>
+            Primeira vez? <Text style={styles.linkDestaque}>Criar uma conta</Text>
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -48,72 +89,74 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#e8f5e9', 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    padding: 20 
+  container: {
+    flex: 1,
+    backgroundColor: '#e8f5e9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
   },
-  cardLogin: { 
-    width: '100%', 
-    maxWidth: 360, 
-    backgroundColor: '#ffffff', 
-    padding: 25, 
-    borderRadius: 16, 
-    borderWidth: 1, 
-    borderColor: '#a5d6a7', 
-    elevation: 4 
+  cardLogin: {
+    width: '100%',
+    maxWidth: 360,
+    backgroundColor: '#ffffff',
+    padding: 25,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#a5d6a7',
+    elevation: 4
   },
-  logo: { 
-    width: 140, 
-    height: 140, 
-    marginBottom: 5, 
-    alignSelf: 'center' 
+  logo: {
+    width: 120, // Ajustado levemente para equilibrar com CriarContaScreen
+    height: 120,
+    marginBottom: 5,
+    alignSelf: 'center'
   },
-  subtitulo: { 
-    fontSize: 13, 
-    color: '#666666', 
-    textAlign: 'center', 
-    marginTop: 5, 
-    marginBottom: 25 
+  subtitulo: {
+    fontSize: 14,
+    color: '#558b2f',
+    textAlign: 'center',
+    marginTop: 5,
+    marginBottom: 25,
+    fontWeight: '500'
   },
-  input: { 
-    width: '100%', 
-    height: 50, 
-    borderWidth: 1.5, 
-    borderColor: '#4caf50', 
-    borderRadius: 10, 
-    paddingHorizontal: 15, 
-    fontSize: 16, 
-    marginBottom: 15, 
-    color: '#111' 
+  input: {
+    width: '100%',
+    height: 50,
+    borderWidth: 1.5,
+    borderColor: '#4caf50',
+    borderRadius: 10,
+    paddingHorizontal: 15,
+    fontSize: 16,
+    marginBottom: 15,
+    color: '#1b5e20'
   },
-  btnEntrar: { 
-    backgroundColor: '#2e7d32', 
-    width: '100%', 
-    height: 50, 
-    borderRadius: 10, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    marginTop: 10 
+  btnEntrar: {
+    backgroundColor: '#2e7d32',
+    width: '100%',
+    height: 50,
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10
   },
-  btnTexto: { 
-    color: '#ffffff', 
-    fontSize: 16, 
-    fontWeight: 'bold' 
-   },
-  linkContainer: { 
-    marginTop: 20, 
-    alignItems: 'center' 
+  btnTexto: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold'
   },
-  linkTexto: { 
-    fontSize: 14, 
-    color: '#666666' 
+  linkContainer: {
+    marginTop: 22,
+    alignItems: 'center'
   },
-  linkDestaque: { 
-    color: '#2e7d32', 
-    fontWeight: 'bold', 
-    textDecorationLine: 'underline' 
-   }
+  linkTexto: {
+    fontSize: 14,
+    color: '#558b2f',
+    fontWeight: '500'
+  },
+  linkDestaque: {
+    color: '#1b5e20',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline'
+  }
 });

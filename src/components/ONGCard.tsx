@@ -9,13 +9,14 @@ interface ONGProps {
     causa: string;
     imagem: ImageSourcePropType;
     descricao: string; 
+    cidade?: string; // Adicionado como opcional para não quebrar os dados atuais
   };
 }
 
 const { width } = Dimensions.get('window');
 
 export default function ONGCard({ item }: ONGProps) {
-  // 1. Interação com a Lista: Alerta com descrição detalhada
+  
   const exibirDetalhes = () => {
     Alert.alert(
       `📖 Sobre a ${item.nome}`,
@@ -34,11 +35,16 @@ export default function ONGCard({ item }: ONGProps) {
       
       <View style={styles.infoContainer}>
         <Text style={styles.tagCausa}>{item.causa}</Text>
-        <Text style={styles.nomeOng}>{item.nome}</Text>
+        <Text style={styles.nomeOng} numberOfLines={1}>{item.nome}</Text>
+        
+        {/* Descrição curta para dar contexto rápido antes do clique */}
+        <Text style={styles.descricaoCurta} numberOfLines={2}>
+          {item.descricao}
+        </Text>
         
         <View style={styles.localContainer}>
-          <Ionicons name="location" size={14} color="#777777" />
-          <Text style={styles.localTexto}>Clique para saber mais</Text>
+          <Ionicons name="location" size={14} color="#2e7d32" />
+          <Text style={styles.localTexto}>{item.cidade || 'Clique para saber mais'}</Text>
         </View>
       </View>
 
@@ -91,20 +97,26 @@ const styles = StyleSheet.create({
   nomeOng: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#3a221d',
+    color: '#1b5e20', // Ajustado para conversar com a paleta verde do app
+  },
+  descricaoCurta: {
+    fontSize: 13,
+    color: '#555555',
+    marginTop: 2,
+    lineHeight: 16,
   },
   localContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
-    marginTop: 4,
+    marginTop: 6,
   },
   localTexto: {
     fontSize: 12,
-    color: '#9e9592',
+    color: '#757575',
   },
   btnApoiar: {
-    backgroundColor: '#4caf50',
+    backgroundColor: '#2e7d32', // Cor verde escura alinhada ao tema geral
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 10,

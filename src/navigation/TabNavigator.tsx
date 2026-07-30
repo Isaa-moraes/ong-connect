@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -16,7 +17,6 @@ export type BottomTabParamList = {
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
 
-// Tipo auxiliar para ler as informações vindas da Stack de Login/Cadastro
 type TabNavigatorRouteProp = RouteProp<{ 
   params: { userName: string; interesses: string[] } 
 }, 'params'>;
@@ -24,7 +24,6 @@ type TabNavigatorRouteProp = RouteProp<{
 export default function TabNavigator() {
   const route = useRoute<TabNavigatorRouteProp>();
   
-  // Resgata o Nome e os Interesses salvos com valores de segurança contra falhas
   const { userName, interesses } = route.params || { 
     userName: 'Voluntário', 
     interesses: ['Geral'] 
@@ -33,7 +32,6 @@ export default function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        // CONFIGURAÇÃO DOS ÍCONES VETORIAIS REATIVOS
         tabBarIcon: ({ focused, color, size }) => {
           let iconName: keyof typeof Ionicons.glyphMap = 'home';
 
@@ -45,24 +43,43 @@ export default function TabNavigator() {
             iconName = focused ? 'person' : 'person-outline';
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName} size={size + 2} color={color} />;
         },
-        tabBarActiveTintColor: '#2e7d32',   // Verde oficial ONG Connect
-        tabBarInactiveTintColor: '#777777', // Cinza para abas em segundo plano
+        tabBarActiveTintColor: '#1b5e20',   // Ajustado para o verde floresta escuro para melhor contraste
+        tabBarInactiveTintColor: '#666666', // Cinza ligeiramente mais escuro para melhor acessibilidade
+        tabBarLabelStyle: {
+          fontSize: 11,
+          fontWeight: '600',
+          marginBottom: Platform.OS === 'ios' ? 0 : 6,
+        },
         tabBarStyle: { 
-          paddingBottom: 5, 
-          height: 60,
+          height: Platform.OS === 'ios' ? 88 : 64,
+          paddingTop: 8,
           backgroundColor: '#ffffff',
-          borderTopWidth: 1,
-          borderTopColor: '#e0e0e0'
+          borderTopWidth: 0, // Remove a linha dura tradicional do topo da barra
+          elevation: 8, // Sombra suave para Android
+          shadowColor: '#1b5e20', // Sombra com o tom do app para iOS
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.06,
+          shadowRadius: 10,
         },
         headerTitleAlign: 'center',
-        headerStyle: { backgroundColor: '#ffffff', elevation: 1, shadowOpacity: 0.1 },
-        headerTintColor: '#2e7d32',
-        headerTitleStyle: { fontWeight: 'bold' }
+        headerStyle: { 
+          backgroundColor: '#ffffff', 
+          elevation: 2, 
+          shadowColor: '#000000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.05,
+          shadowRadius: 3,
+          borderBottomWidth: 0
+        },
+        headerTintColor: '#1b5e20',
+        headerTitleStyle: { 
+          fontWeight: 'bold',
+          fontSize: 17
+        }
       })}
     >
-      {/* ABA 1: Dashboard Inicial com Saudação Nominal */}
       <Tab.Screen 
         name="Dashboard" 
         component={DashboardScreen} 
@@ -70,14 +87,12 @@ export default function TabNavigator() {
         options={{ title: 'Início' }}
       />
       
-      {/* ABA 2: Lista de Exploração de ONGs e Causas */}
       <Tab.Screen 
         name="Explorar" 
         component={ExplorarScreen} 
         options={{ title: 'Descobrir' }}
       />
       
-      {/* ABA 3: Perfil Estilizado em Lista (Inspirado na foto enviada) */}
       <Tab.Screen 
         name="Perfil" 
         component={PerfilScreen} 

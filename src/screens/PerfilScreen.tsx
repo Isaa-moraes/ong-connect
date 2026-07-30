@@ -15,43 +15,30 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 export default function PerfilScreen() {
   const route = useRoute<PerfilScreenRouteProp>();
   const navigation = useNavigation<NavigationProp>();
-  
-  const { userName, interesses: interessesIniciais } = route.params || { 
-    userName: 'Voluntário Cadastrado', 
-    interesses: ['Geral'] 
+
+  const { userName, interesses: interessesIniciais } = route.params || {
+    userName: 'Voluntário Cadastrado',
+    interesses: ['Geral']
   };
 
-  // Estado local para permitir que o diálogo mude os interesses dinamicamente na tela
   const [meusInteresses, setMeusInteresses] = useState<string[]>(interessesIniciais);
-
   const stringInteresses = meusInteresses.join(', ');
 
-  // 2. Feedback de Ação: Componente de Diálogo Interativo para alteração de interesses
-  const abrirDialogoInteresses = () => {
-    Alert.alert(
-      "🎯 Editar Interesses",
-      "Qual causa você prefere priorizar hoje no ecossistema?",
-      [
-        {
-          text: "📚 Educação",
-          onPress: () => setMeusInteresses(["Educação"])
-        },
-        {
-          text: "🌱 Meio Ambiente",
-          onPress: () => setMeusInteresses(["Meio Ambiente"])
-        },
-        {
-          text: "🏥 Saúde",
-          onPress: () => setMeusInteresses(["Saúde"])
-        },
-        {
-          text: "Cancelar",
-          style: "cancel"
-        }
-      ],
-      { cancelable: true }
-    );
+  // Gera as iniciais do nome do usuário para o Avatar
+  const obterIniciais = (nome: string) => {
+    return nome
+      .split(' ')
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join('')
+      .toUpperCase();
   };
+
+  const abrirDialogoInteresses = () => {
+    // Apaga o Alert e chama a tela visual de interesses que você já criou
+    navigation.navigate('Interesses', { origem: 'perfil' });
+  };
+
 
   const deslogarConta = () => {
     navigation.reset({
@@ -61,12 +48,22 @@ export default function PerfilScreen() {
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+
+      {/* Novo Cabeçalho com Avatar de Voluntário */}
+      <View style={styles.avatarSeccao}>
+        <View style={styles.avatarCirculo}>
+          <Text style={styles.avatarTexto}>{obterIniciais(userName)}</Text>
+        </View>
+        <Text style={styles.userNameTexto}>{userName}</Text>
+        <Text style={styles.userSubTexto}>Membro ativo do ecossistema</Text>
+      </View>
+
       <Text style={styles.topTitulo}>Minha conta</Text>
 
       <View style={styles.cardListaContainer}>
-        
-        {/* Item 1: Interesses Dinâmicos + Gatilho de Diálogo */}
+
+        {/* Item 1: Interesses Dinâmicos */}
         <TouchableOpacity style={styles.itemMenu} onPress={abrirDialogoInteresses}>
           <View style={styles.itemEsquerdaContainer}>
             <View style={[styles.iconeFundo, { backgroundColor: '#ffebee' }]}>
@@ -77,7 +74,6 @@ export default function PerfilScreen() {
               <Text style={styles.subtituloItem} numberOfLines={1}>{stringInteresses}</Text>
             </View>
           </View>
-          {/* Botão de Ação menor embutido para dar a dica de clique */}
           <Text style={styles.txtEditar}>Editar</Text>
           <Ionicons name="chevron-forward" size={18} color="#cccccc" />
         </TouchableOpacity>
@@ -88,7 +84,7 @@ export default function PerfilScreen() {
         <TouchableOpacity style={styles.itemMenu}>
           <View style={styles.itemEsquerdaContainer}>
             <View style={[styles.iconeFundo, { backgroundColor: '#e8f5e9' }]}>
-              <Ionicons name="clipboard" size={22} color="#4caf50" />
+              <Ionicons name="clipboard" size={22} color="#1b5e20" />
             </View>
             <View style={styles.textoContainer}>
               <Text style={styles.tituloItem}>Minhas Ações</Text>
@@ -100,7 +96,7 @@ export default function PerfilScreen() {
 
         <View style={styles.divisor} />
 
-        {/* Item 3: Notificações do Sistema */}
+        {/* Item 3: Notificações */}
         <TouchableOpacity style={styles.itemMenu}>
           <View style={styles.itemEsquerdaContainer}>
             <View style={[styles.iconeFundo, { backgroundColor: '#fff8e1' }]}>
@@ -142,41 +138,75 @@ export default function PerfilScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#e8f5e9' },
   content: { padding: 20 },
-  topTitulo: { fontSize: 22, fontWeight: 'bold', color: '#3a221d', marginBottom: 20, marginTop: 10 },
-  cardListaContainer: { 
-    backgroundColor: '#ffffff', 
-    borderRadius: 20, 
-    paddingVertical: 10, 
-    paddingHorizontal: 15, 
+
+  // Novos estilos criados para o Cabeçalho com Avatar:
+  avatarSeccao: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 25,
+  },
+  avatarCirculo: {
+    width: 75,
+    height: 75,
+    borderRadius: 38,
+    backgroundColor: '#1b5e20',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+    elevation: 3,
+    shadowColor: '#1b5e20',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+  },
+  avatarTexto: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  userNameTexto: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1b5e20',
+  },
+  userSubTexto: {
+    fontSize: 12,
+    color: '#558b2f',
+    marginTop: 2,
+    fontWeight: '500',
+  },
+
+  topTitulo: { fontSize: 16, fontWeight: '700', color: '#1b5e20', marginBottom: 12 },
+  cardListaContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 15,
     shadowColor: '#1b5e20',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 5,
-    elevation: 3 
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 3
   },
   itemMenu: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 14 },
   itemEsquerdaContainer: { flexDirection: 'row', alignItems: 'center', flex: 1 },
   iconeFundo: { width: 42, height: 42, borderRadius: 10, alignItems: 'center', justifyContent: 'center', marginRight: 15 },
   textoContainer: { flex: 1 },
-  tituloItem: { fontSize: 16, fontWeight: 'bold', color: '#3a221d' },
-  subtituloItem: { fontSize: 13, color: '#9e9592', marginTop: 2 },
-  txtEditar: { fontSize: 13, color: '#2e7d32', fontWeight: 'bold', marginRight: 5 },
-  divisor: { height: 1, backgroundColor: '#f5eee9', marginLeft: 57 },
-  btnSairOutline: { 
-    marginTop: 25, 
-    width: '100%', 
-    height: 54, 
-    borderRadius: 16, 
-    borderWidth: 1.5, 
-    borderColor: '#d32f2f', 
-    backgroundColor: '#ffffff', 
-    justifyContent: 'center', 
+  tituloItem: { fontSize: 15, fontWeight: 'bold', color: '#2c3e50' },
+  subtituloItem: { fontSize: 13, color: '#7f8c8d', marginTop: 2 },
+  txtEditar: { fontSize: 13, color: '#1b5e20', fontWeight: 'bold', marginRight: 5 },
+  divisor: { height: 1, backgroundColor: '#f1f2f6', marginLeft: 57 },
+  btnSairOutline: {
+    marginTop: 25,
+    width: '100%',
+    height: 52,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#d32f2f',
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#d32f2f',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 1
   },
-  btnSairTexto: { color: '#d32f2f', fontWeight: 'bold', fontSize: 16 }
+  btnSairTexto: { color: '#d32f2f', fontWeight: 'bold', fontSize: 15 }
 });
