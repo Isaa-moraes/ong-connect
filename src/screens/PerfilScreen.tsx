@@ -18,10 +18,10 @@ type NavigationProp = StackNavigationProp<RootStackParamList>;
 export default function PerfilScreen() {
   const route = useRoute<PerfilScreenRouteProp>();
   const navigation = useNavigation<NavigationProp>();
-  
-  const { userName, interesses: interessesIniciais } = route.params || { 
-    userName: 'Voluntário Cadastrado', 
-    interesses: ['Geral'] 
+
+  const { userName, interesses: interessesIniciais } = route.params || {
+    userName: 'Voluntário Cadastrado',
+    interesses: ['Geral']
   };
 
   const [meusInteresses, setMeusInteresses] = useState<string[]>(interessesIniciais);
@@ -51,7 +51,7 @@ export default function PerfilScreen() {
   const usarCamera = async () => {
     // Pede "por favor" ao sistema para abrir a câmera física (Permission)
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
-    
+
     if (status !== 'granted') {
       Alert.alert('Permissão Negada', 'Precisamos de acesso à câmera para tirar sua foto.');
       return;
@@ -61,7 +61,7 @@ export default function PerfilScreen() {
     let resultado = await ImagePicker.launchCameraAsync({
       mediaTypes: ['images'],
       allowsEditing: true, // Abre o editor nativo para recortar a imagem em quadrado
-      aspect:,
+      aspect: [1, 1],
       quality: 0.7, // Reduz levemente para não pesar na memória
     });
 
@@ -75,7 +75,7 @@ export default function PerfilScreen() {
   const usarGaleria = async () => {
     // Pede "por favor" ao sistema para abrir os arquivos de mídia (Permission)
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (status !== 'granted') {
       Alert.alert('Permissão Negada', 'Precisamos de acesso à galeria para buscar sua foto.');
       return;
@@ -85,7 +85,7 @@ export default function PerfilScreen() {
     let resultado = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
-      aspect:,
+      aspect: [1, 1],
       quality: 0.7,
     });
 
@@ -114,7 +114,7 @@ export default function PerfilScreen() {
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-      
+
       {/* Cabeçalho com Avatar Clicável para o Hardware */}
       <View style={styles.avatarSeccao}>
         <TouchableOpacity style={styles.avatarCirculo} onPress={abrirOpcoesFoto} activeOpacity={0.8}>
@@ -125,16 +125,18 @@ export default function PerfilScreen() {
             // Fallback: Se não tiver foto, mostra as iniciais textuais padrão
             <Text style={styles.avatarTexto}>{obterIniciais(userName)}</Text>
           )}
-          
-          {/* Pequeno ícone de câmera flutuante para indicar que é clicável */}
+
+          {/* Ícone de câmera flutuante que estava faltando no seu JSX */}
           <View style={styles.iconeCameraFlutuante}>
             <Ionicons name="camera" size={14} color="#ffffff" />
           </View>
         </TouchableOpacity>
 
+        {/* Agora exibindo o userName dinâmico transmitido corretamente */}
         <Text style={styles.userNameTexto}>{userName}</Text>
         <Text style={styles.userSubTexto}>Membro ativo do ecossistema</Text>
       </View>
+
 
       <Text style={styles.topTitulo}>Minha conta</Text>
 
@@ -207,17 +209,17 @@ export default function PerfilScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: '#e8f5e9' 
+  container: {
+    flex: 1,
+    backgroundColor: '#e8f5e9'
   },
-  content: { 
-    padding: 20 
+  content: {
+    padding: 20
   },
-  avatarSeccao: { 
-    alignItems: 'center', 
-    marginTop: 10, 
-    marginBottom: 25 
+  avatarSeccao: {
+    alignItems: 'center',
+    marginTop: 10,
+    marginBottom: 25
   },
   avatarCirculo: {
     width: 80,
@@ -239,11 +241,11 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 40, // Mantém a foto redonda dentro do círculo
   },
-  avatarTexto: { 
-    color: '#ffffff', 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    letterSpacing: 1 
+  avatarTexto: {
+    color: '#ffffff',
+    fontSize: 24,
+    fontWeight: 'bold',
+    letterSpacing: 1
   },
   iconeCameraFlutuante: {
     position: 'absolute',
@@ -258,91 +260,91 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#ffffff'
   },
-  userNameTexto: { 
-    fontSize: 18, 
-    fontWeight: 'bold', 
-    color: '#1b5e20' 
+  userNameTexto: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1b5e20'
   },
-  userSubTexto: { 
-    fontSize: 12, 
-    color: '#558b2f', 
-    marginTop: 2, 
-    fontWeight: '500' 
+  userSubTexto: {
+    fontSize: 12,
+    color: '#558b2f',
+    marginTop: 2,
+    fontWeight: '500'
   },
-  topTitulo: { 
-    fontSize: 16, 
-    fontWeight: '700', 
-    color: '#1b5e20', 
-    marginBottom: 12 
+  topTitulo: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1b5e20',
+    marginBottom: 12
   },
-  cardListaContainer: { 
-    backgroundColor: '#ffffff', 
-    borderRadius: 20, 
-    paddingVertical: 6, 
-    paddingHorizontal: 15, 
-    shadowColor: '#1b5e20', 
-    shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.05, 
-    shadowRadius: 6, 
-    elevation: 3 
+  cardListaContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+    shadowColor: '#1b5e20',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 3
   },
-  itemMenu: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between', 
-    paddingVertical: 14 
+  itemMenu: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 14
   },
-  itemEsquerdaContainer: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    flex: 1 
+  itemEsquerdaContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1
   },
-  iconeFundo: { 
-    width: 42, 
-    height: 42, 
-    borderRadius: 10, 
-    alignItems: 'center', 
-    justifyContent: 'center', 
-    marginRight: 15 
+  iconeFundo: {
+    width: 42,
+    height: 42,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 15
   },
-  textoContainer: { 
-    flex: 1 
+  textoContainer: {
+    flex: 1
   },
-  tituloItem: { 
-    fontSize: 15, 
-    fontWeight: 'bold', 
-    color: '#2c3e50' 
+  tituloItem: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#2c3e50'
   },
-  subtituloItem: { 
-    fontSize: 13, 
-    color: '#7f8c8d', 
-    marginTop: 2 
+  subtituloItem: {
+    fontSize: 13,
+    color: '#7f8c8d',
+    marginTop: 2
   },
-  txtEditar: { 
-    fontSize: 13, 
-    color: '#1b5e20', 
-    fontWeight: 'bold', 
-    marginRight: 5 
+  txtEditar: {
+    fontSize: 13,
+    color: '#1b5e20',
+    fontWeight: 'bold',
+    marginRight: 5
   },
-  divisor: { 
-    height: 1, 
-    backgroundColor: '#f1f2f6', 
-    marginLeft: 57 
+  divisor: {
+    height: 1,
+    backgroundColor: '#f1f2f6',
+    marginLeft: 57
   },
-  btnSairOutline: { 
-    marginTop: 25, 
-    width: '100%', 
-    height: 52, 
-    borderRadius: 14, 
-    borderWidth: 1.5, 
-    borderColor: '#d32f2f', 
-    backgroundColor: '#ffffff', 
-    justifyContent: 'center', 
-    alignItems: 'center' 
+  btnSairOutline: {
+    marginTop: 25,
+    width: '100%',
+    height: 52,
+    borderRadius: 14,
+    borderWidth: 1.5,
+    borderColor: '#d32f2f',
+    backgroundColor: '#ffffff',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  btnSairTexto: { 
-    color: '#d32f2f', 
-    fontWeight: 'bold', 
-    fontSize: 15 
+  btnSairTexto: {
+    color: '#d32f2f',
+    fontWeight: 'bold',
+    fontSize: 15
   }
 });

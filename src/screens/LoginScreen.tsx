@@ -10,7 +10,7 @@ type LoginScreenRouteProp = RouteProp<RootStackParamList, 'Login'>;
 export default function LoginScreen() {
   const [emailDigitado, setEmailDigitado] = useState('');
   const [senha, setSenha] = useState('');
-  
+
   const navigation = useNavigation<LoginScreenNavProp>();
   const route = useRoute<LoginScreenRouteProp>();
 
@@ -23,55 +23,54 @@ export default function LoginScreen() {
       return;
     }
 
-    // Validação real: Verifica se existe um cadastro na memória dessa sessão
     if (!dadosCadastrados) {
       Alert.alert('⚠️ Erro', 'Nenhuma conta encontrada com este e-mail. Por favor, cadastre-se primeiro.');
       return;
     }
 
-    // Verifica se o e-mail digitado coincide exatamente com o e-mail do cadastro
     if (emailDigitado.trim().toLowerCase() !== dadosCadastrados.email.toLowerCase()) {
       Alert.alert('⚠️ Erro', 'E-mail ou senha incorretos.');
       return;
     }
 
-    // Se as credenciais baterem, entra no app levando o Nome e os Interesses REAIS do cadastro!
-    navigation.replace('HomeTabs', { 
-      userName: dadosCadastrados.userName, 
-      email: dadosCadastrados.email, 
-      interesses: dadosCadastrados.interesses 
+    // CORREÇÃO AQUI: Passa o userName REAL que veio da memória do cadastro feito antes!
+    navigation.replace('HomeTabs', {
+      userName: dadosCadastrados.userName,
+      email: dadosCadastrados.email,
+      interesses: dadosCadastrados.interesses
     });
   };
+
 
   return (
     <View style={styles.container}>
       <View style={styles.cardLogin}>
 
-        <Image 
-          source={require('../../assets/logo-branca.png')} 
+        <Image
+          source={require('../../assets/logo-branca.png')}
           style={styles.logo}
           resizeMode="contain"
         />
 
         <Text style={styles.subtitulo}>Faça login para continuar suas ações</Text>
 
-        <TextInput 
-          style={styles.input} 
+        <TextInput
+          style={styles.input}
           placeholder="Seu E-mail" // Mudado para E-mail para simular um site real
           placeholderTextColor="#81c784"
-          value={emailDigitado} 
-          onChangeText={setEmailDigitado} 
+          value={emailDigitado}
+          onChangeText={setEmailDigitado}
           keyboardType="email-address"
-          autoCapitalize="none" 
+          autoCapitalize="none"
         />
-        
-        <TextInput 
-          style={styles.input} 
-          placeholder="Sua Senha" 
+
+        <TextInput
+          style={styles.input}
+          placeholder="Sua Senha"
           placeholderTextColor="#81c784"
-          value={senha} 
-          onChangeText={setSenha} 
-          secureTextEntry 
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry
         />
 
         <TouchableOpacity style={styles.btnEntrar} onPress={lidarComLogin} activeOpacity={0.8}>
